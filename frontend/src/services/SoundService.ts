@@ -2,6 +2,8 @@ import { Audio } from "expo-av";
 
 class SoundService {
   private static enabled = true;
+  private static initialized = false; // 🔥 Prevent double init
+  private static backgroundStarted = false; // 🔥 Prevent duplicate play
 
   private static clickSound: Audio.Sound | null = null;
   private static dropSound: Audio.Sound | null = null;
@@ -11,16 +13,20 @@ class SoundService {
 
   private static backgroundMusic: Audio.Sound | null = null;
 
-  // ✅ Initialize everything
+  // ✅ Initialize everything safely (only once)
   static async initialize() {
+    if (this.initialized) {
+      console.log("🔁 SoundService already initialized — skipping.");
+      return;
+    }
+
     try {
       console.log("🔊 Loading sounds...");
 
-      // ✅ Required audio mode setup
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: false,
-        playsInSilentModeIOS: true, // ✅ MOST IMPORTANT
+        playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
       });
 
@@ -45,7 +51,7 @@ class SoundService {
         require("../../assets/sounds/draw.mp3")
       )).sound;
 
-      // ✅ Load Background Music
+      // Load Background Music (only once)
       this.backgroundMusic = (await Audio.Sound.createAsync(
         require("../../assets/sounds/background.mp3"),
         {
@@ -53,6 +59,8 @@ class SoundService {
           volume: 0.4,
         }
       )).sound;
+
+      this.initialized = true;
 
       console.log("✅ Sounds loaded successfully");
     } catch (error) {
@@ -64,22 +72,26 @@ class SoundService {
   static setEnabled(value: boolean) {
     this.enabled = value;
 
-    // Stop music instantly if disabled
     if (!value) {
       this.stopBackground();
     }
   }
 
-  // ✅ Background Music Start
+  // ✅ Safe Background Start
   static async startBackground() {
     if (!this.enabled) return;
     if (!this.backgroundMusic) return;
+    if (this.backgroundStarted) {
+      console.log("🎵 Background already playing — skipping.");
+      return;
+    }
 
     try {
       const status = await this.backgroundMusic.getStatusAsync();
 
       if (status.isLoaded && !status.isPlaying) {
         await this.backgroundMusic.playAsync();
+        this.backgroundStarted = true;
         console.log("🎵 Background music started");
       }
     } catch (error) {
@@ -96,10 +108,28 @@ class SoundService {
 
       if (status.isLoaded && status.isPlaying) {
         await this.backgroundMusic.stopAsync();
+        this.backgroundStarted = false;
         console.log("⏹ Background music stopped");
       }
     } catch (error) {
       console.log("❌ Background stop error:", error);
+    }
+  }
+
+  // Optional: unload if needed
+  static async unloadAll() {
+    try {
+      await this.clickSound?.unloadAsync();
+      await this.dropSound?.unloadAsync();
+      await this.winSound?.unloadAsync();
+      await this.loseSound?.unloadAsync();
+      await this.drawSound?.unloadAsync();
+      await this.backgroundMusic?.unloadAsync();
+
+      this.initialized = false;
+      this.backgroundStarted = false;
+    } catch (error) {
+      console.log("❌ Unload error:", error);
     }
   }
 

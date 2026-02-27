@@ -10,6 +10,13 @@ export default function HomeScreen({ navigation }: any) {
         title="Start Game"
         onPress={() => navigation.navigate("Game")}
       />
+
+      <View style={{ marginTop: 20 }}>
+        <Button
+          title="Settings"
+          onPress={() => navigation.navigate("Settings")}
+        />
+      </View>
     </View>
   );
 }
