@@ -81,3 +81,8 @@ android-sdk/ -e
 # Environment files
 *.env
 *.env.*
+
+# App builds
+releases/
+*.apk
+*.aab
