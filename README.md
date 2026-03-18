@@ -99,7 +99,7 @@ Currently a solo project. Contributions and suggestions are welcome.
 
 ## 📄 License
 
-This project is open-source (or specify your license here).
+This project is open-source.
 
 ---
 
