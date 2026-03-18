@@ -15,6 +15,7 @@ import { useUser } from "../src/context/UserContext";
 import { useTheme } from "../src/context/ThemeContext";
 
 import SoundService from "../src/services/SoundService";
+import AdBanner from "../src/components/ads/AdBanner";
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -32,11 +33,8 @@ export default function MenuScreen() {
     const setup = async () => {
       await SoundService.initialize();
       SoundService.setEnabled(soundEnabled);
-
-      // ✅ Start Background Music Here
       await SoundService.startBackground();
     };
-
     setup();
   }, []);
 
@@ -45,7 +43,6 @@ export default function MenuScreen() {
     SoundService.setEnabled(soundEnabled);
   }, [soundEnabled]);
 
-  // Capitalise Username
   const formattedName = user?.username
     ? user.username
         .split(" ")
@@ -53,24 +50,18 @@ export default function MenuScreen() {
         .join(" ")
     : "";
 
-  // Play Button
   const handlePlay = async () => {
     if (soundEnabled) await SoundService.playClick();
-
-    // ✅ Stop menu music during game
     await SoundService.stopBackground();
-
     router.push(`/game?difficulty=${selectedDifficulty}`);
   };
 
-  // Logout Button
   const handleLogout = async () => {
     if (soundEnabled) await SoundService.playClick();
     await logout();
     router.replace("/");
   };
 
-  // Difficulty Select
   const handleDifficultySelect = async (key: Difficulty) => {
     if (soundEnabled) await SoundService.playClick();
     setSelectedDifficulty(key);
@@ -110,11 +101,7 @@ export default function MenuScreen() {
           <View style={[styles.logoSmall, { backgroundColor: colors.surface }]}>
             <Ionicons name="grid" size={32} color={colors.primary} />
           </View>
-
-          <Text style={[styles.title, { color: colors.text }]}>
-            Connect 4
-          </Text>
-
+          <Text style={[styles.title, { color: colors.text }]}>Connect 4</Text>
           <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>
             Welcome, {formattedName}!
           </Text>
@@ -125,7 +112,6 @@ export default function MenuScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Select Difficulty
           </Text>
-
           <View style={styles.difficultyContainer}>
             {difficultyOptions.map((option) => (
               <TouchableOpacity
@@ -154,11 +140,9 @@ export default function MenuScreen() {
                     color={option.color}
                   />
                 </View>
-
                 <Text style={[styles.difficultyLabel, { color: colors.text }]}>
                   {option.label}
                 </Text>
-
                 <Text
                   style={[
                     styles.difficultyDescription,
@@ -183,7 +167,6 @@ export default function MenuScreen() {
 
         {/* Menu Options */}
         <View style={styles.menuOptions}>
-          {/* Profile */}
           <TouchableOpacity
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/profile")}
@@ -196,7 +179,6 @@ export default function MenuScreen() {
             >
               <Ionicons name="person" size={24} color={colors.primary} />
             </View>
-
             <View style={styles.menuCardContent}>
               <Text style={[styles.menuCardTitle, { color: colors.text }]}>
                 Profile
@@ -210,15 +192,9 @@ export default function MenuScreen() {
                 View your stats
               </Text>
             </View>
-
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          {/* Leaderboard */}
           <TouchableOpacity
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/leaderboard")}
@@ -231,7 +207,6 @@ export default function MenuScreen() {
             >
               <Ionicons name="trophy" size={24} color={colors.warning} />
             </View>
-
             <View style={styles.menuCardContent}>
               <Text style={[styles.menuCardTitle, { color: colors.text }]}>
                 Leaderboard
@@ -245,15 +220,9 @@ export default function MenuScreen() {
                 Top 10 players
               </Text>
             </View>
-
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          {/* Settings */}
           <TouchableOpacity
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/settings")}
@@ -264,13 +233,8 @@ export default function MenuScreen() {
                 { backgroundColor: colors.textSecondary + "20" },
               ]}
             >
-              <Ionicons
-                name="settings"
-                size={24}
-                color={colors.textSecondary}
-              />
+              <Ionicons name="settings" size={24} color={colors.textSecondary} />
             </View>
-
             <View style={styles.menuCardContent}>
               <Text style={[styles.menuCardTitle, { color: colors.text }]}>
                 Settings
@@ -284,14 +248,12 @@ export default function MenuScreen() {
                 Theme & sounds
               </Text>
             </View>
-
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
+
+        {/* ✅ Banner Ad */}
+        <AdBanner />
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -305,20 +267,10 @@ export default function MenuScreen() {
   );
 }
 
-/* Styles */
 const styles = StyleSheet.create({
   container: { flex: 1 },
-
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 50,
-  },
-
-  header: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-
+  scrollContent: { padding: 20, paddingBottom: 50 },
+  header: { alignItems: "center", marginBottom: 32 },
   logoSmall: {
     width: 64,
     height: 64,
@@ -327,32 +279,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-
-  welcomeText: {
-    fontSize: 16,
-    marginTop: 6,
-  },
-
-  section: {
-    marginBottom: 24,
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-
-  difficultyContainer: {
-    flexDirection: "row",
-    gap: 12,
-  },
-
+  title: { fontSize: 28, fontWeight: "bold" },
+  welcomeText: { fontSize: 16, marginTop: 6 },
+  section: { marginBottom: 24 },
+  sectionTitle: { fontSize: 18, fontWeight: "600", marginBottom: 16 },
+  difficultyContainer: { flexDirection: "row", gap: 12 },
   difficultyCard: {
     flex: 1,
     borderRadius: 16,
@@ -361,7 +292,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "transparent",
   },
-
   difficultyIcon: {
     width: 56,
     height: 56,
@@ -370,18 +300,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-
-  difficultyLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-
-  difficultyDescription: {
-    fontSize: 12,
-    textAlign: "center",
-  },
-
+  difficultyLabel: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
+  difficultyDescription: { fontSize: 12, textAlign: "center" },
   playButton: {
     flexDirection: "row",
     borderRadius: 16,
@@ -391,25 +311,14 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 28,
   },
-
-  playButtonText: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
-
-  menuOptions: {
-    gap: 12,
-    marginBottom: 24,
-  },
-
+  playButtonText: { fontSize: 20, fontWeight: "700", color: "#FFFFFF" },
+  menuOptions: { gap: 12, marginBottom: 24 },
   menuCard: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 16,
     padding: 16,
   },
-
   menuCardIcon: {
     width: 48,
     height: 48,
@@ -418,21 +327,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 16,
   },
-
-  menuCardContent: {
-    flex: 1,
-  },
-
-  menuCardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 2,
-  },
-
-  menuCardSubtitle: {
-    fontSize: 14,
-  },
-
+  menuCardContent: { flex: 1 },
+  menuCardTitle: { fontSize: 16, fontWeight: "600", marginBottom: 2 },
+  menuCardSubtitle: { fontSize: 14 },
   logoutButton: {
     flexDirection: "row",
     justifyContent: "center",
@@ -440,9 +337,5 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     gap: 8,
   },
-
-  logoutText: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
+  logoutText: { fontSize: 16, fontWeight: "500" },
 });

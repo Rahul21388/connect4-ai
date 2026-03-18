@@ -8,7 +8,14 @@
     "userInterfaceStyle": "automatic",
     "plugins": [
       "expo-router",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-9942161594730475~8411429010"
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/images/splash-image.png",
@@ -17,15 +24,14 @@
     },
     "android": {
       "package": "com.rahulprakash.connect4ai",
-      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "blockedPermissions": [
-    "android.permission.FOREGROUND_SERVICE",
-    "android.permission.RECORD_AUDIO"
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "ios": {
