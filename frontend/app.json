@@ -2,7 +2,7 @@
   "expo": {
     "name": "Connect 4 AI",
     "slug": "connect4-ai",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
@@ -17,12 +17,16 @@
     },
     "android": {
       "package": "com.rahulprakash.connect4ai",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "blockedPermissions": [
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
       "supportsTablet": true
