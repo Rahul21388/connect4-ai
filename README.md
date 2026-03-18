@@ -1,93 +1,126 @@
-# 🎮 Connect 4 AI Game
+# Connect 4 AI 🎮
 
-A modern, fully-featured **Connect 4 game** built with **React Native + Expo**, featuring:
-
-- Smart AI opponents (Easy / Medium / Hard)
-- User profiles with stats tracking
-- Leaderboard system using Firebase Firestore
-- Sound effects (click, drop, win)
-- Dark mode + theme settings
-- Clean UI built for mobile-first gameplay
-
-This project is fully owned, independently maintained, and designed for future expansion into a complete game platform.
+A smart and engaging implementation of the classic Connect 4 game, powered by AI. Challenge yourself against intelligent gameplay, enjoy a clean UI, and experience strategic fun anytime.
 
 ---
 
-## 🚀 Features
+## 🚀 Live App
 
-### ✅ Gameplay
-- Classic Connect 4 rules
-- Smooth disc drop animations
-- AI difficulty levels:
-  - Easy: Random moves
-  - Medium: Blocking + attacking
-  - Hard: Minimax-based intelligent play
-
-### ✅ Player System
-- Username-based player identity
-- Stats saved automatically:
-  - Wins
-  - Losses
-  - Draws
-  - Total games played
-
-### ✅ Leaderboard
-- Top 10 players ranked by wins
-- Highlight current user in leaderboard
-
-### ✅ Settings
-- Dark Mode toggle
-- Sound Effects toggle
-
-### ✅ Audio Support
-- Button click sound
-- Disc drop sound
-- Win celebration sound
+🔗 https://play.google.com/store/apps/details?id=com.rahulprakash.connect4ai
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Features
 
-### Frontend
-- React Native
-- Expo SDK 54
-- Expo Router
-- TypeScript
-- Context API (User + Theme)
+- 🤖 Play against AI with intelligent move logic
+- 🎯 Smooth and responsive gameplay
+- 🌙 Light & Dark mode support
+- ⚙️ Settings customization
+- 🧠 Strategy-based game experience
+- 📱 Optimized for multiple devices
 
-### Backend / Database
-- Firebase Firestore (Cloud database)
-- Local fallback support if Firebase not configured
+---
+
+## 🧠 AI Logic (High-Level)
+
+The AI evaluates:
+
+- Winning opportunities
+- Blocking opponent moves
+- Strategic positioning (center control, future setups)
+
+Future improvements:
+- Difficulty levels (Easy, Medium, Hard)
+- Advanced algorithms (Minimax with Alpha-Beta pruning)
 
 ---
 
 ## 📂 Project Structure
 
+```
 frontend/
-├── app/
-│ ├── index.tsx # Login / Welcome screen
-│ ├── menu.tsx # Main menu screen
-│ ├── game.tsx # Game screen with AI logic
-│ ├── profile.tsx # User profile + stats
-│ ├── leaderboard.tsx # Top players ranking
-│ ├── settings.tsx # Theme + sound toggles
+│── app/
+│   ├── menu.tsx
+│   ├── _layout.tsx
 │
-├── src/
-│ ├── ai/ # AI difficulty logic
-│ ├── components/ # Board + Disc UI
-│ ├── context/ # ThemeContext + UserContext
-│ ├── firebase/ # Firestore helpers
-│ ├── services/ # SoundService
+│── src/
+│   ├── components/
+│   │   └── ads/
+│   ├── hooks/
 │
-├── assets/
-│ └── sounds/ # click.mp3, drop.mp3, win.mp3
+│── app.json
+│── package.json
+```
 
 ---
 
-👤 Author
+## 💰 Monetization Strategy
 
-Developed and maintained by:
+- Google AdMob integration (in progress)
+- Future plans:
+  - Rewarded ads
+  - Premium ad-free version
 
-Rahul Prakash
+---
 
-All branding, code, architecture, and assets are fully owned and controlled by the author.
+## 📈 Growth Strategy (ASO)
+
+- Keyword optimization in Play Store listing
+- Improved screenshots and feature graphics
+- Landing page: https://rahulprakash.co.in/apps/connect4
+- Social sharing (LinkedIn, WhatsApp)
+
+---
+
+## 🛠️ Tech Stack
+
+- React Native (Expo)
+- TypeScript
+- Google Play Console
+- AdMob (for monetization)
+
+---
+
+## 📌 Roadmap
+
+- [ ] Add onboarding tutorial
+- [ ] Implement difficulty levels
+- [ ] Leaderboard system
+- [ ] Multiplayer mode (future)
+- [ ] Sound effects & animations
+
+---
+
+## 🤝 Contribution
+
+Currently a solo project. Contributions and suggestions are welcome.
+
+---
+
+## 📄 License
+
+This project is open-source (or specify your license here).
+
+---
+
+## 👨‍💻 Author
+
+**Rahul Prakash**  
+AI Specialist | Developer | Consultant
+
+---
+
+## ⭐ Support
+
+If you like this project:
+
+- ⭐ Rate the app on Play Store
+- 🔗 Share with friends
+- 💬 Provide feedback
+
+---
+
+## 📬 Feedback
+
+Your feedback helps improve the app. Future updates will be based on user suggestions and testing insights.
+
