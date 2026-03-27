@@ -2,10 +2,20 @@
   "expo": {
     "name": "Connect 4 AI",
     "slug": "connect4-ai",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "scheme": "connect4ai",
     "userInterfaceStyle": "automatic",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2014d179-3d17-4a6d-ade4-c9328788a810",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD"
+    },
     "plugins": [
       "expo-router",
       "expo-audio",
@@ -13,7 +23,8 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-9942161594730475~8411429010"
+          "androidAppId": "ca-app-pub-9942161594730475~8411429010",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
         }
       ]
     ],
@@ -32,6 +43,10 @@
       "blockedPermissions": [
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.RECORD_AUDIO"
+      ],
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "ios": {
@@ -45,6 +60,7 @@
       "eas": {
         "projectId": "2014d179-3d17-4a6d-ade4-c9328788a810"
       }
-    }
+    },
+    "owner": "rahul_prakash"
   }
 }

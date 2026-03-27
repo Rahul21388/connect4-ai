@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Image } from 'react-native';
 import {
   View,
   Text,
@@ -98,9 +99,11 @@ export default function MenuScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={[styles.logoSmall, { backgroundColor: colors.surface }]}>
-            <Ionicons name="grid" size={32} color={colors.primary} />
-          </View>
+          <Image
+            source={require('../assets/images/icon.png')}
+            style={styles.logoSmall}
+            resizeMode="cover"
+          />
           <Text style={[styles.title, { color: colors.text }]}>Connect 4</Text>
           <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>
             Welcome, {formattedName}!
