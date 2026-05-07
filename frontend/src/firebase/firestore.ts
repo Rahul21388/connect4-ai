@@ -1,6 +1,6 @@
 /**
  * Firestore Helper Functions
- * Handles all database operations for Connect 4
+ * Handles all database operations for Four in a Row AI
  */
 
 import {

@@ -254,7 +254,7 @@ export default function GameScreen() {
         </TouchableOpacity>
 
         <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Connect 4
+          Four in a Row AI
         </Text>
 
         <View style={{ width: 44 }} />

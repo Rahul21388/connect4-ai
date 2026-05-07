@@ -29,7 +29,6 @@ export default function ProfileScreen() {
     setRefreshing(false);
   };
 
-  // ✅ Capitalise Each Word in Username
   const formatUsername = (name: string) => {
     return name
       .split(' ')
@@ -44,9 +43,7 @@ export default function ProfileScreen() {
 
   if (isLoading || !user) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: colors.background }]}
-      >
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -55,9 +52,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -65,20 +60,19 @@ export default function ProfileScreen() {
           onPress={() => router.back()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
-
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
 
         <TouchableOpacity
-          style={styles.refreshButton}
+          style={[styles.refreshButton, { backgroundColor: colors.surface }]}
           onPress={handleRefresh}
           disabled={refreshing}
         >
           {refreshing ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={colors.primary} />
           ) : (
-            <Ionicons name="refresh" size={24} color="#3B82F6" />
+            <Ionicons name="refresh" size={24} color={colors.primary} />
           )}
         </TouchableOpacity>
       </View>
@@ -86,15 +80,13 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Profile Header */}
         <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            <Ionicons name="person" size={48} color="#3B82F6" />
+          <View style={[styles.avatarContainer, { backgroundColor: colors.surface }]}>
+            <Ionicons name="person" size={48} color={colors.primary} />
           </View>
 
-          {/* ✅ Username Capitalised */}
           <Text style={[styles.username, { color: colors.text }]}>
             {formatUsername(user.username)}
           </Text>
-
 
           <View style={styles.winRateBadge}>
             <Ionicons name="trending-up" size={16} color="#22C55E" />
@@ -104,57 +96,49 @@ export default function ProfileScreen() {
 
         {/* Stats Cards */}
         <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.statIcon, { backgroundColor: '#3B82F620' }]}>
               <Ionicons name="game-controller" size={28} color="#3B82F6" />
             </View>
-            <Text style={styles.statValue}>{user.totalGames}</Text>
-            <Text style={styles.statLabel}>Total Games</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{user.totalGames}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Games</Text>
           </View>
 
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.statIcon, { backgroundColor: '#22C55E20' }]}>
               <Ionicons name="trophy" size={28} color="#22C55E" />
             </View>
-            <Text style={[styles.statValue, { color: '#22C55E' }]}>
-              {user.wins}
-            </Text>
-            <Text style={styles.statLabel}>Wins</Text>
+            <Text style={[styles.statValue, { color: '#22C55E' }]}>{user.wins}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Wins</Text>
           </View>
 
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.statIcon, { backgroundColor: '#EF444420' }]}>
               <Ionicons name="close-circle" size={28} color="#EF4444" />
             </View>
-            <Text style={[styles.statValue, { color: '#EF4444' }]}>
-              {user.losses}
-            </Text>
-            <Text style={styles.statLabel}>Losses</Text>
+            <Text style={[styles.statValue, { color: '#EF4444' }]}>{user.losses}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Losses</Text>
           </View>
 
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.statIcon, { backgroundColor: '#F59E0B20' }]}>
               <Ionicons name="remove-circle" size={28} color="#F59E0B" />
             </View>
-            <Text style={[styles.statValue, { color: '#F59E0B' }]}>
-              {user.draws}
-            </Text>
-            <Text style={styles.statLabel}>Draws</Text>
+            <Text style={[styles.statValue, { color: '#F59E0B' }]}>{user.draws}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Draws</Text>
           </View>
         </View>
 
         {/* Win Rate Progress */}
         <View style={styles.progressSection}>
-          <Text style={styles.progressTitle}>Performance</Text>
-          <View style={styles.progressCard}>
+          <Text style={[styles.progressTitle, { color: colors.text }]}>Performance</Text>
+          <View style={[styles.progressCard, { backgroundColor: colors.surface }]}>
             <View style={styles.progressHeader}>
-              <Text style={styles.progressLabel}>Win Rate</Text>
+              <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>Win Rate</Text>
               <Text style={styles.progressValue}>{winPercentage}%</Text>
             </View>
-            <View style={styles.progressBarContainer}>
-              <View
-                style={[styles.progressBar, { width: `${winPercentage}%` }]}
-              />
+            <View style={[styles.progressBarContainer, { backgroundColor: colors.background }]}>
+              <View style={[styles.progressBar, { width: `${winPercentage}%` }]} />
             </View>
           </View>
         </View>
@@ -162,7 +146,7 @@ export default function ProfileScreen() {
         {/* Quick Actions */}
         <View style={styles.actionsSection}>
           <TouchableOpacity
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: colors.primary }]}
             onPress={() => router.push('/game?difficulty=medium')}
           >
             <Ionicons name="play" size={24} color="#FFFFFF" />
@@ -170,7 +154,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.leaderboardButton}
+            style={[styles.leaderboardButton, { backgroundColor: colors.surface }]}
             onPress={() => router.push('/leaderboard')}
           >
             <Ionicons name="trophy" size={24} color="#F59E0B" />
@@ -185,7 +169,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
   },
   loadingContainer: {
     flex: 1,
@@ -203,20 +186,17 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#1E293B',
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
   },
   refreshButton: {
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#1E293B',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -231,7 +211,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#1E293B',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -241,7 +220,6 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
     marginBottom: 8,
   },
   winRateBadge: {
@@ -267,7 +245,6 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#1E293B',
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
@@ -283,12 +260,10 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: '#64748B',
   },
   progressSection: {
     marginBottom: 24,
@@ -296,11 +271,9 @@ const styles = StyleSheet.create({
   progressTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
     marginBottom: 12,
   },
   progressCard: {
-    backgroundColor: '#1E293B',
     borderRadius: 16,
     padding: 20,
   },
@@ -312,7 +285,6 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 16,
-    color: '#94A3B8',
   },
   progressValue: {
     fontSize: 18,
@@ -321,7 +293,6 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 12,
-    backgroundColor: '#0F172A',
     borderRadius: 6,
     overflow: 'hidden',
   },
@@ -335,7 +306,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flexDirection: 'row',
-    backgroundColor: '#3B82F6',
     borderRadius: 16,
     height: 56,
     justifyContent: 'center',
@@ -349,7 +319,6 @@ const styles = StyleSheet.create({
   },
   leaderboardButton: {
     flexDirection: 'row',
-    backgroundColor: '#1E293B',
     borderRadius: 16,
     height: 56,
     justifyContent: 'center',

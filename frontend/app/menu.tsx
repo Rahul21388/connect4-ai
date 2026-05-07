@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image } from 'react-native';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,8 +16,7 @@ type Difficulty = "easy" | "medium" | "hard";
 export default function MenuScreen() {
   const router = useRouter();
 
-  const [selectedDifficulty, setSelectedDifficulty] =
-    useState<Difficulty>("medium");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
 
   const { user, logout } = useUser();
   const { colors, soundEnabled } = useTheme();
@@ -93,18 +85,19 @@ export default function MenuScreen() {
   ];
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+
         {/* Header */}
         <View style={styles.header}>
           <Image
             source={require('../assets/images/icon.png')}
-            style={styles.logoSmall}
+            style={styles.logo}
             resizeMode="cover"
           />
-          <Text style={[styles.title, { color: colors.text }]}>Connect 4</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Challenge the AI. Can you win?
+          </Text>
           <Text style={[styles.welcomeText, { color: colors.textSecondary }]}>
             Welcome, {formattedName}!
           </Text>
@@ -127,9 +120,7 @@ export default function MenuScreen() {
                     borderWidth: 2,
                   },
                 ]}
-                onPress={() =>
-                  handleDifficultySelect(option.key as Difficulty)
-                }
+                onPress={() => handleDifficultySelect(option.key as Difficulty)}
               >
                 <View
                   style={[
@@ -137,21 +128,12 @@ export default function MenuScreen() {
                     { backgroundColor: option.color + "20" },
                   ]}
                 >
-                  <Ionicons
-                    name={option.icon as any}
-                    size={28}
-                    color={option.color}
-                  />
+                  <Ionicons name={option.icon as any} size={28} color={option.color} />
                 </View>
                 <Text style={[styles.difficultyLabel, { color: colors.text }]}>
                   {option.label}
                 </Text>
-                <Text
-                  style={[
-                    styles.difficultyDescription,
-                    { color: colors.textSecondary },
-                  ]}
-                >
+                <Text style={[styles.difficultyDescription, { color: colors.textSecondary }]}>
                   {option.description}
                 </Text>
               </TouchableOpacity>
@@ -174,24 +156,12 @@ export default function MenuScreen() {
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/profile")}
           >
-            <View
-              style={[
-                styles.menuCardIcon,
-                { backgroundColor: colors.primary + "20" },
-              ]}
-            >
+            <View style={[styles.menuCardIcon, { backgroundColor: colors.primary + "20" }]}>
               <Ionicons name="person" size={24} color={colors.primary} />
             </View>
             <View style={styles.menuCardContent}>
-              <Text style={[styles.menuCardTitle, { color: colors.text }]}>
-                Profile
-              </Text>
-              <Text
-                style={[
-                  styles.menuCardSubtitle,
-                  { color: colors.textSecondary },
-                ]}
-              >
+              <Text style={[styles.menuCardTitle, { color: colors.text }]}>Profile</Text>
+              <Text style={[styles.menuCardSubtitle, { color: colors.textSecondary }]}>
                 View your stats
               </Text>
             </View>
@@ -202,24 +172,12 @@ export default function MenuScreen() {
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/leaderboard")}
           >
-            <View
-              style={[
-                styles.menuCardIcon,
-                { backgroundColor: colors.warning + "20" },
-              ]}
-            >
+            <View style={[styles.menuCardIcon, { backgroundColor: colors.warning + "20" }]}>
               <Ionicons name="trophy" size={24} color={colors.warning} />
             </View>
             <View style={styles.menuCardContent}>
-              <Text style={[styles.menuCardTitle, { color: colors.text }]}>
-                Leaderboard
-              </Text>
-              <Text
-                style={[
-                  styles.menuCardSubtitle,
-                  { color: colors.textSecondary },
-                ]}
-              >
+              <Text style={[styles.menuCardTitle, { color: colors.text }]}>Leaderboard</Text>
+              <Text style={[styles.menuCardSubtitle, { color: colors.textSecondary }]}>
                 Top 10 players
               </Text>
             </View>
@@ -230,24 +188,12 @@ export default function MenuScreen() {
             style={[styles.menuCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push("/settings")}
           >
-            <View
-              style={[
-                styles.menuCardIcon,
-                { backgroundColor: colors.textSecondary + "20" },
-              ]}
-            >
+            <View style={[styles.menuCardIcon, { backgroundColor: colors.textSecondary + "20" }]}>
               <Ionicons name="settings" size={24} color={colors.textSecondary} />
             </View>
             <View style={styles.menuCardContent}>
-              <Text style={[styles.menuCardTitle, { color: colors.text }]}>
-                Settings
-              </Text>
-              <Text
-                style={[
-                  styles.menuCardSubtitle,
-                  { color: colors.textSecondary },
-                ]}
-              >
+              <Text style={[styles.menuCardTitle, { color: colors.text }]}>Settings</Text>
+              <Text style={[styles.menuCardSubtitle, { color: colors.textSecondary }]}>
                 Theme & sounds
               </Text>
             </View>
@@ -261,10 +207,9 @@ export default function MenuScreen() {
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color={colors.error} />
-          <Text style={[styles.logoutText, { color: colors.error }]}>
-            Logout
-          </Text>
+          <Text style={[styles.logoutText, { color: colors.error }]}>Logout</Text>
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -274,15 +219,18 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: { padding: 20, paddingBottom: 50 },
   header: { alignItems: "center", marginBottom: 32 },
-  logoSmall: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
+  logo: {
+    width: 100,
+    height: 100,
+    borderRadius: 24,
+    marginBottom: 16,
   },
-  title: { fontSize: 28, fontWeight: "bold" },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+    textAlign: "center",
+  },
   welcomeText: { fontSize: 16, marginTop: 6 },
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 18, fontWeight: "600", marginBottom: 16 },

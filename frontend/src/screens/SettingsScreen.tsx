@@ -9,10 +9,10 @@ import {
 } from "react-native";
 
 const PRIVACY_URL =
-  "https://rahulprakash.co.in/apps/connect4/privacy.php";
+  "https://rahulprakash.co.in/apps/fourinarow/privacy.php";
 
 const TERMS_URL =
-  "https://rahulprakash.co.in/apps/connect4/terms.php";
+  "https://rahulprakash.co.in/apps/fourinarow/terms.php";
 
 export default function SettingsScreen() {
   const openLink = async (url: string) => {

@@ -1,5 +1,5 @@
 /**
- * Game Utilities for Connect 4
+ * Game Utilities for Four in a Row AI
  * Core game logic shared across AI modules
  */
 

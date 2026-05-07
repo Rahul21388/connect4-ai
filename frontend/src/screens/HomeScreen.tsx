@@ -4,7 +4,7 @@ import { View, Text, Button, StyleSheet } from "react-native";
 export default function HomeScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connect 4 Game</Text>
+      <Text style={styles.title}>Four in a Row AI</Text>
 
       <Button
         title="Start Game"

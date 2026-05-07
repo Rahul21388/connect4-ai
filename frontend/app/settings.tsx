@@ -30,12 +30,9 @@ export default function SettingsScreen() {
     toggleSound,
   } = useTheme();
 
-  const PRIVACY_URL =
-    "https://rahulprakash.co.in/apps/connect4/privacy.php";
-
-  const TERMS_URL =
-    "https://rahulprakash.co.in/apps/connect4/terms.php";
-
+  const PRIVACY_URL = "https://rahulprakash.co.in/apps/fourinarow/privacy.php";
+  const TERMS_URL = "https://rahulprakash.co.in/apps/fourinarow/terms.php";
+  const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.rahulprakash.connect4ai";
   const SUPPORT_EMAIL = "admin@rahulprakash.co.in";
 
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
@@ -59,10 +56,19 @@ export default function SettingsScreen() {
     router.push('/tutorial');
   };
 
+  const handleRateApp = async () => {
+    if (soundEnabled) await SoundService.playClick();
+    try {
+      await Linking.openURL(PLAY_STORE_URL);
+    } catch {
+      Alert.alert("Error", "Unable to open Play Store.");
+    }
+  };
+
   const handleSendFeedback = async () => {
     if (soundEnabled) await SoundService.playClick();
 
-    const subject = encodeURIComponent("Connect 4 AI - User Feedback");
+    const subject = encodeURIComponent("Four in a Row AI - User Feedback");
     const body = encodeURIComponent(
 `Hi Rahul,
 
@@ -81,14 +87,9 @@ Platform: ${Platform.OS}
     const mailtoUrl = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
 
     try {
-      const supported = await Linking.canOpenURL(mailtoUrl);
-      if (supported) {
-        await Linking.openURL(mailtoUrl);
-      } else {
-        Alert.alert("Error", "No email app found.");
-      }
+      await Linking.openURL(mailtoUrl);
     } catch {
-      Alert.alert("Error", "Unable to open email client.");
+      Alert.alert("Error", "Unable to open email client. Please email us at " + SUPPORT_EMAIL);
     }
   };
 
@@ -209,13 +210,28 @@ Platform: ${Platform.OS}
               <View style={[styles.settingIcon, { backgroundColor: colors.primary + '20' }]}>
                 <Ionicons name="school-outline" size={24} color={colors.primary} />
               </View>
-
               <View style={styles.settingContent}>
                 <Text style={[styles.settingTitle, { color: colors.text }]}>
                   Replay Tutorial
                 </Text>
               </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
 
+            <View style={{ height: 1, backgroundColor: colors.surfaceLight, marginHorizontal: 16 }} />
+
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={handleRateApp}
+            >
+              <View style={[styles.settingIcon, { backgroundColor: '#F59E0B20' }]}>
+                <Ionicons name="star-outline" size={24} color="#F59E0B" />
+              </View>
+              <View style={styles.settingContent}>
+                <Text style={[styles.settingTitle, { color: colors.text }]}>
+                  Rate the App
+                </Text>
+              </View>
               <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
@@ -228,13 +244,11 @@ Platform: ${Platform.OS}
               <View style={[styles.settingIcon, { backgroundColor: colors.success + '20' }]}>
                 <Ionicons name="mail-outline" size={24} color={colors.success} />
               </View>
-
               <View style={styles.settingContent}>
                 <Text style={[styles.settingTitle, { color: colors.text }]}>
                   Send Feedback
                 </Text>
               </View>
-
               <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 

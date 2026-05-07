@@ -114,7 +114,7 @@ export default function LoginScreen() {
               <Ionicons name="grid" size={60} color={colors.primary} />
             </View>
             <Text style={[styles.title, { color: colors.text }]}>
-              Connect 4
+              Four in a Row AI
             </Text>
             <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Challenge the AI

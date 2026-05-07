@@ -16,14 +16,14 @@ export default function TutorialScreen() {
 
   const slides = [
     {
-      title: "Welcome to Connect 4 AI",
+      title: "Welcome to Four in a Row AI",
       description:
         "Challenge an intelligent AI in this classic strategy game.",
     },
     {
       title: "How to Win",
       description:
-        "Drop your discs and connect 4 in a row — horizontally, vertically, or diagonally.",
+        "Drop your discs and make Four in a Row — horizontally, vertically, or diagonally.",
     },
     {
       title: "Choose Difficulty",
