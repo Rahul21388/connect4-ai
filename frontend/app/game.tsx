@@ -374,10 +374,10 @@ export default function GameScreen() {
         lastMove={displayLastMove}
       />
 
-      {/* Result Card — shown below the board when the game ends */}
+      {/* Result Card — floats over the bottom of the screen when game ends */}
       {gameOver && !isReplaying && (
         <View
-          style={[styles.resultCard, { backgroundColor: colors.surface }]}
+          style={[styles.bottomPanel, { backgroundColor: colors.surface }]}
         >
           <View style={styles.resultHeader}>
             <Ionicons
@@ -422,10 +422,10 @@ export default function GameScreen() {
         </View>
       )}
 
-      {/* Replay Controls — shown below the board while replaying */}
+      {/* Replay Controls — floats over the bottom of the screen while replaying */}
       {isReplaying && (
         <View
-          style={[styles.replayControls, { backgroundColor: colors.surface }]}
+          style={[styles.bottomPanel, { backgroundColor: colors.surface }]}
         >
           <View style={styles.replayButtonRow}>
             <TouchableOpacity
@@ -464,7 +464,6 @@ export default function GameScreen() {
                 { backgroundColor: colors.primary },
               ]}
               onPress={() => {
-                // If at end, restart from beginning
                 if (replayStep >= moveHistory.length && !isAutoPlaying) {
                   goToStep(0);
                   setIsAutoPlaying(true);
@@ -523,9 +522,7 @@ export default function GameScreen() {
             style={[styles.exitReplayButton, { borderColor: colors.primary }]}
             onPress={exitReplay}
           >
-            <Text
-              style={[styles.exitReplayText, { color: colors.primary }]}
-            >
+            <Text style={[styles.exitReplayText, { color: colors.primary }]}>
               Exit Replay
             </Text>
           </TouchableOpacity>
@@ -571,18 +568,22 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Result card (replaces the full-screen modal)
-  resultCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 20,
+  // Bottom panel — absolutely positioned so it's always visible above the board
+  bottomPanel: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     padding: 20,
+    paddingBottom: 28,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 16,
   },
 
   resultHeader: {
@@ -636,20 +637,6 @@ const styles = StyleSheet.create({
 
   backToMenuText: {
     fontSize: 13,
-  },
-
-  // Replay controls
-  replayControls: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 20,
-    padding: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
   },
 
   replayButtonRow: {
