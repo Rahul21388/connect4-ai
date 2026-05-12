@@ -1,6 +1,6 @@
-# Connect 4 AI 🎮
+# Four in a Row AI 🎮
 
-A smart and engaging implementation of the classic Connect 4 game, powered by AI. Challenge yourself against intelligent gameplay, enjoy a clean UI, and experience strategic fun anytime.
+A smart and engaging implementation of the classic Four in a Row AI game, powered by AI. Challenge yourself against intelligent gameplay, enjoy a clean UI, and experience strategic fun anytime.
 
 ---
 

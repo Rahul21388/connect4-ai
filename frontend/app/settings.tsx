@@ -9,6 +9,7 @@ import {
   Linking,
   Alert,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 
 import { useRouter } from 'expo-router';
@@ -17,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
 import { useTheme } from '../src/context/ThemeContext';
+import { useAdRemoval } from './context/AdRemovalContext';
 import SoundService from '../src/services/SoundService';
 
 export default function SettingsScreen() {
@@ -29,6 +31,8 @@ export default function SettingsScreen() {
     soundEnabled,
     toggleSound,
   } = useTheme();
+
+  const { adsRemoved, isPurchasing, initiateRemoveAdsPurchase, restoreAds } = useAdRemoval();
 
   const PRIVACY_URL = "https://rahulprakash.co.in/apps/fourinarow/privacy.php";
   const TERMS_URL = "https://rahulprakash.co.in/apps/fourinarow/terms.php";
@@ -195,6 +199,92 @@ Platform: ${Platform.OS}
           </View>
         </View>
 
+        {/* Purchases */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+            PURCHASES
+          </Text>
+
+          <View style={[styles.settingCard, { backgroundColor: colors.surface }]}>
+            {/* Status row — always visible */}
+            <View style={styles.settingRow}>
+              <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
+                <Ionicons
+                  name={adsRemoved ? 'shield-checkmark' : 'shield-outline'}
+                  size={24}
+                  color="#8B5CF6"
+                />
+              </View>
+              <View style={styles.settingContent}>
+                <Text style={[styles.settingTitle, { color: colors.text }]}>
+                  Ad Removal
+                </Text>
+                <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
+                  {adsRemoved ? 'Purchased — Ads Removed' : 'Not Purchased'}
+                </Text>
+              </View>
+              {adsRemoved && (
+                <Ionicons name="checkmark-circle" size={22} color={colors.success} />
+              )}
+            </View>
+
+            {/* Purchase + Restore rows — only shown when not yet purchased */}
+            {!adsRemoved && (
+              <>
+                <View style={{ height: 1, backgroundColor: colors.surfaceLight, marginHorizontal: 16 }} />
+
+                <TouchableOpacity
+                  style={styles.settingRow}
+                  onPress={initiateRemoveAdsPurchase}
+                  disabled={isPurchasing}
+                >
+                  <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
+                    <Ionicons name="ban-outline" size={24} color="#8B5CF6" />
+                  </View>
+                  <View style={styles.settingContent}>
+                    <Text style={[styles.settingTitle, { color: colors.text }]}>
+                      Remove Ads
+                    </Text>
+                    <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
+                      One-time purchase
+                    </Text>
+                  </View>
+                  {isPurchasing ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                  )}
+                </TouchableOpacity>
+
+                <View style={{ height: 1, backgroundColor: colors.surfaceLight, marginHorizontal: 16 }} />
+
+                <TouchableOpacity
+                  style={styles.settingRow}
+                  onPress={restoreAds}
+                  disabled={isPurchasing}
+                >
+                  <View style={[styles.settingIcon, { backgroundColor: colors.success + '20' }]}>
+                    <Ionicons name="refresh-outline" size={24} color={colors.success} />
+                  </View>
+                  <View style={styles.settingContent}>
+                    <Text style={[styles.settingTitle, { color: colors.text }]}>
+                      Restore Purchase
+                    </Text>
+                    <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
+                      Sync from a previous device
+                    </Text>
+                  </View>
+                  {isPurchasing ? (
+                    <ActivityIndicator size="small" color={colors.success} />
+                  ) : (
+                    <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                  )}
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+
         {/* Support */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
@@ -340,4 +430,5 @@ const styles = StyleSheet.create({
   },
   settingContent: { flex: 1 },
   settingTitle: { fontSize: 16, fontWeight: '600' },
+  settingSubtitle: { fontSize: 13, marginTop: 2 },
 });

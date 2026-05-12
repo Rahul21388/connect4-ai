@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from '../src/context/UserContext';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
+import { AdRemovalProvider } from './context/AdRemovalContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import mobileAds from 'react-native-google-mobile-ads';
@@ -47,7 +48,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider>
         <UserProvider>
-          <RootLayoutNav />
+          <AdRemovalProvider>
+            <RootLayoutNav />
+          </AdRemovalProvider>
         </UserProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

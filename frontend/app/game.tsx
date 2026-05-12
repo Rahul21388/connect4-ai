@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Modal,
   ActivityIndicator,
 } from "react-native";
 
@@ -31,6 +30,8 @@ import { getHardMove } from "../src/ai/minimax";
 
 import { useUser } from "../src/context/UserContext";
 import { useTheme } from "../src/context/ThemeContext";
+import { useAdRemoval } from "./context/AdRemovalContext";
+import AdBanner from "../src/components/ads/AdBanner";
 
 import { updateStats, GameResult } from "../src/firebase/firestore";
 
@@ -38,6 +39,8 @@ import SoundService from "../src/services/SoundService";
 
 type Difficulty = "easy" | "medium" | "hard";
 type GameState = "playing" | "playerWin" | "aiWin" | "draw";
+
+type MoveRecord = { col: number; player: 1 | 2; row: number };
 
 export default function GameScreen() {
   const router = useRouter();
@@ -47,6 +50,7 @@ export default function GameScreen() {
 
   const { user, refreshUser } = useUser();
   const { colors, soundEnabled } = useTheme();
+  const { adsRemoved, isPurchasing, initiateRemoveAdsPurchase } = useAdRemoval();
 
   const [board, setBoard] = useState<BoardState>(createEmptyBoard());
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
@@ -58,16 +62,25 @@ export default function GameScreen() {
   const [lastMove, setLastMove] =
     useState<{ row: number; col: number } | null>(null);
 
-  const [showResultModal, setShowResultModal] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [statsUpdated, setStatsUpdated] = useState(false);
 
-  // ✅ Enable / Disable sound
+  // Move history for replay
+  const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
+  const [isReplaying, setIsReplaying] = useState(false);
+  const [replayStep, setReplayStep] = useState(0);
+  const [replayBoard, setReplayBoard] = useState<BoardState>(createEmptyBoard());
+  const [replayLastMove, setReplayLastMove] =
+    useState<{ row: number; col: number } | null>(null);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+
+  // Enable / Disable sound
   useEffect(() => {
     SoundService.setEnabled(soundEnabled);
   }, [soundEnabled]);
 
-  // ✅ AI Move Logic
+  // AI Move Logic
   const getAIMove = useCallback(
     (currentBoard: BoardState): number => {
       switch (difficulty) {
@@ -82,7 +95,7 @@ export default function GameScreen() {
     [difficulty]
   );
 
-  // ✅ AI Turn
+  // AI Turn
   useEffect(() => {
     if (!isPlayerTurn && gameState === "playing") {
       setIsAIThinking(true);
@@ -98,6 +111,10 @@ export default function GameScreen() {
 
           setBoard(newBoard);
           setLastMove({ row: dropRow, col: aiCol });
+          setMoveHistory((prev) => [
+            ...prev,
+            { col: aiCol, player: 2, row: dropRow },
+          ]);
 
           // AI Win
           if (checkWin(newBoard, 2)) {
@@ -106,7 +123,7 @@ export default function GameScreen() {
 
             if (soundEnabled) await SoundService.playLose();
 
-            setShowResultModal(true);
+            setGameOver(true);
           }
 
           // Draw
@@ -115,7 +132,7 @@ export default function GameScreen() {
 
             if (soundEnabled) await SoundService.playDraw();
 
-            setShowResultModal(true);
+            setGameOver(true);
           }
 
           // Continue game
@@ -131,7 +148,7 @@ export default function GameScreen() {
     }
   }, [isPlayerTurn, gameState, board, getAIMove, soundEnabled]);
 
-  // ✅ Update Stats Once
+  // Update Stats Once
   useEffect(() => {
     const updateGameStats = async () => {
       if (gameState !== "playing" && user && !statsUpdated) {
@@ -156,7 +173,7 @@ export default function GameScreen() {
     updateGameStats();
   }, [gameState, user, statsUpdated]);
 
-  // ✅ Player Move
+  // Player Move
   const handleColumnPress = async (col: number) => {
     if (!isPlayerTurn || gameState !== "playing" || isAIThinking) return;
 
@@ -170,6 +187,7 @@ export default function GameScreen() {
 
     setBoard(newBoard);
     setLastMove({ row: dropRow, col });
+    setMoveHistory((prev) => [...prev, { col, player: 1, row: dropRow }]);
 
     // Player Win
     if (checkWin(newBoard, 1)) {
@@ -178,7 +196,7 @@ export default function GameScreen() {
 
       if (soundEnabled) await SoundService.playWin();
 
-      setShowResultModal(true);
+      setGameOver(true);
     }
 
     // Draw
@@ -187,7 +205,7 @@ export default function GameScreen() {
 
       if (soundEnabled) await SoundService.playDraw();
 
-      setShowResultModal(true);
+      setGameOver(true);
     }
 
     // AI Turn
@@ -196,7 +214,7 @@ export default function GameScreen() {
     }
   };
 
-  // ✅ Reset Game
+  // Reset Game
   const handlePlayAgain = async () => {
     if (soundEnabled) await SoundService.playClick();
 
@@ -205,40 +223,105 @@ export default function GameScreen() {
     setGameState("playing");
     setWinningCells(null);
     setLastMove(null);
-    setShowResultModal(false);
+    setGameOver(false);
     setStatsUpdated(false);
+    setMoveHistory([]);
+    setIsReplaying(false);
+    setReplayStep(0);
+    setReplayBoard(createEmptyBoard());
+    setReplayLastMove(null);
+    setIsAutoPlaying(false);
   };
 
-  // ✅ Result Message
+  // Replay: jump to a specific move index
+  const goToStep = useCallback(
+    (step: number) => {
+      const newBoard = moveHistory
+        .slice(0, step)
+        .reduce(
+          (b, { col, player }) => makeMove(b, col, player),
+          createEmptyBoard()
+        );
+
+      setReplayBoard(newBoard);
+      setReplayStep(step);
+      setReplayLastMove(
+        step > 0
+          ? { row: moveHistory[step - 1].row, col: moveHistory[step - 1].col }
+          : null
+      );
+    },
+    [moveHistory]
+  );
+
+  const startReplay = async () => {
+    if (soundEnabled) await SoundService.playClick();
+    setIsReplaying(true);
+    setIsAutoPlaying(false);
+    // Start from the final state so player sees the board, then can step back/forward
+    const totalMoves = moveHistory.length;
+    const finalBoard = moveHistory.reduce(
+      (b, { col, player }) => makeMove(b, col, player),
+      createEmptyBoard()
+    );
+    setReplayBoard(finalBoard);
+    setReplayStep(totalMoves);
+    setReplayLastMove(
+      totalMoves > 0
+        ? { row: moveHistory[totalMoves - 1].row, col: moveHistory[totalMoves - 1].col }
+        : null
+    );
+  };
+
+  const exitReplay = () => {
+    setIsReplaying(false);
+    setIsAutoPlaying(false);
+  };
+
+  // Auto-play effect
+  useEffect(() => {
+    if (!isAutoPlaying || !isReplaying) return;
+
+    if (replayStep >= moveHistory.length) {
+      setIsAutoPlaying(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      goToStep(replayStep + 1);
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [isAutoPlaying, isReplaying, replayStep, moveHistory, goToStep]);
+
+  // Result message config
   const getResultMessage = () => {
     switch (gameState) {
       case "playerWin":
-        return {
-          title: "You Win!",
-          icon: "trophy",
-          color: colors.success,
-        };
-
+        return { title: "You Win!", icon: "trophy", color: colors.success };
       case "aiWin":
-        return {
-          title: "AI Wins",
-          icon: "sad",
-          color: colors.error,
-        };
-
+        return { title: "AI Wins", icon: "sad", color: colors.error };
       case "draw":
-        return {
-          title: "It's a Draw!",
-          icon: "remove",
-          color: colors.warning,
-        };
-
+        return { title: "It's a Draw!", icon: "remove", color: colors.warning };
       default:
         return { title: "", icon: "help", color: colors.text };
     }
   };
 
   const result = getResultMessage();
+
+  // Board display switches to replay state when replaying
+  const displayBoard = isReplaying ? replayBoard : board;
+  const displayLastMove = isReplaying ? replayLastMove : lastMove;
+  const displayWinningCells =
+    isReplaying && replayStep < moveHistory.length ? null : winningCells;
+
+  const replayPlayerLabel =
+    replayStep > 0
+      ? moveHistory[replayStep - 1].player === 1
+        ? "You"
+        : "AI"
+      : null;
 
   return (
     <SafeAreaView
@@ -257,64 +340,170 @@ export default function GameScreen() {
           Four in a Row AI
         </Text>
 
-        <View style={{ width: 44 }} />
+        {adsRemoved ? (
+          <View style={{ width: 44 }} />
+        ) : (
+          <TouchableOpacity
+            style={[styles.removeAdsButton, { backgroundColor: colors.primary + '20' }]}
+            onPress={initiateRemoveAdsPurchase}
+            disabled={isPurchasing}
+          >
+            <Text style={[styles.removeAdsText, { color: colors.primary }]}>
+              {isPurchasing ? '...' : 'No Ads'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Turn Indicator */}
+      {/* Turn / Replay Indicator */}
       <View style={styles.turnContainer}>
-        {isAIThinking && <ActivityIndicator size="small" color={colors.primary} />}
-        <Text style={{ color: colors.textSecondary, marginTop: 6 }}>
-          {isAIThinking
-            ? "AI is thinking..."
-            : isPlayerTurn
-            ? "Your Turn"
-            : "AI Turn"}
-        </Text>
+        {isReplaying ? (
+          <Text style={[styles.replayStepLabel, { color: colors.primary }]}>
+            Move {replayStep} / {moveHistory.length}
+            {replayPlayerLabel ? `  ·  ${replayPlayerLabel}` : ""}
+          </Text>
+        ) : (
+          <>
+            {isAIThinking && (
+              <ActivityIndicator size="small" color={colors.primary} />
+            )}
+            <Text style={{ color: colors.textSecondary, marginTop: 6 }}>
+              {isAIThinking
+                ? "AI is thinking..."
+                : isPlayerTurn
+                ? "Your Turn"
+                : "AI Turn"}
+            </Text>
+          </>
+        )}
       </View>
 
-      {/* Board */}
+      {/* Board — always visible */}
       <Board
-        board={board}
-        onColumnPress={handleColumnPress}
-        disabled={!isPlayerTurn || isAIThinking}
-        winningCells={winningCells}
-        lastMove={lastMove}
+        board={displayBoard}
+        onColumnPress={isReplaying ? () => {} : handleColumnPress}
+        disabled={!isPlayerTurn || isAIThinking || isReplaying || gameOver}
+        winningCells={displayWinningCells}
+        lastMove={displayLastMove}
       />
 
-      {/* Result Modal */}
-      <Modal visible={showResultModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View
-            style={[styles.modalContent, { backgroundColor: colors.surface }]}
-          >
-            <Ionicons
-              name={result.icon as any}
-              size={60}
-              color={result.color}
-            />
+      {/* Ad banner — hidden once ads are removed */}
+      {!adsRemoved && <AdBanner />}
 
+      {/* Result panel — floats over the bottom of the screen when game ends */}
+      {gameOver && !isReplaying && (
+        <View style={[styles.bottomPanel, { backgroundColor: colors.surface }]}>
+          <View style={styles.resultHeader}>
+            <Ionicons name={result.icon as any} size={36} color={result.color} />
             <Text style={[styles.resultTitle, { color: result.color }]}>
               {result.title}
             </Text>
+          </View>
 
+          <View style={styles.resultButtons}>
             <TouchableOpacity
-              style={[
-                styles.playAgainButton,
-                { backgroundColor: colors.primary },
-              ]}
-              onPress={handlePlayAgain}
+              style={[styles.outlineButton, { borderColor: colors.primary }]}
+              onPress={startReplay}
             >
-              <Text style={styles.playAgainText}>Play Again</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.replace("/menu")}>
-              <Text style={{ marginTop: 12, color: colors.primary }}>
-                Back to Menu
+              <Ionicons name="play-back" size={16} color={colors.primary} />
+              <Text style={[styles.outlineButtonText, { color: colors.primary }]}>
+                Watch Replay
               </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.filledButton, { backgroundColor: colors.primary }]}
+              onPress={handlePlayAgain}
+            >
+              <Text style={styles.filledButtonText}>Play Again</Text>
+            </TouchableOpacity>
           </View>
+
+          <TouchableOpacity onPress={() => router.replace("/menu")}>
+            <Text style={[styles.backToMenuText, { color: colors.textSecondary }]}>
+              Back to Menu
+            </Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
+      )}
+
+      {/* Replay controls — floats over the bottom of the screen while replaying */}
+      {isReplaying && (
+        <View style={[styles.bottomPanel, { backgroundColor: colors.surface }]}>
+          <View style={styles.replayButtonRow}>
+            <TouchableOpacity
+              style={styles.replayNavButton}
+              onPress={() => { setIsAutoPlaying(false); goToStep(0); }}
+              disabled={replayStep === 0}
+            >
+              <Ionicons
+                name="play-skip-back"
+                size={26}
+                color={replayStep === 0 ? colors.textSecondary : colors.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.replayNavButton}
+              onPress={() => { setIsAutoPlaying(false); goToStep(Math.max(0, replayStep - 1)); }}
+              disabled={replayStep === 0}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={26}
+                color={replayStep === 0 ? colors.textSecondary : colors.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.replayPlayButton, { backgroundColor: colors.primary }]}
+              onPress={() => {
+                if (replayStep >= moveHistory.length && !isAutoPlaying) {
+                  goToStep(0);
+                  setIsAutoPlaying(true);
+                } else {
+                  setIsAutoPlaying(!isAutoPlaying);
+                }
+              }}
+            >
+              <Ionicons name={isAutoPlaying ? "pause" : "play"} size={26} color="#FFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.replayNavButton}
+              onPress={() => { setIsAutoPlaying(false); goToStep(Math.min(moveHistory.length, replayStep + 1)); }}
+              disabled={replayStep === moveHistory.length}
+            >
+              <Ionicons
+                name="chevron-forward"
+                size={26}
+                color={replayStep === moveHistory.length ? colors.textSecondary : colors.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.replayNavButton}
+              onPress={() => { setIsAutoPlaying(false); goToStep(moveHistory.length); }}
+              disabled={replayStep === moveHistory.length}
+            >
+              <Ionicons
+                name="play-skip-forward"
+                size={26}
+                color={replayStep === moveHistory.length ? colors.textSecondary : colors.primary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.outlineButton, { borderColor: colors.primary, paddingHorizontal: 24 }]}
+            onPress={exitReplay}
+          >
+            <Text style={[styles.outlineButtonText, { color: colors.primary }]}>
+              Exit Replay
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -346,39 +535,118 @@ const styles = StyleSheet.create({
   turnContainer: {
     alignItems: "center",
     marginBottom: 10,
+    minHeight: 32,
+    justifyContent: "center",
   },
 
-  modalOverlay: {
+  replayStepLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  // Absolute bottom sheet — always visible regardless of board height
+  bottomPanel: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    paddingBottom: 28,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 16,
+  },
+
+  resultHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 16,
+  },
+
+  resultTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+
+  resultButtons: {
+    flexDirection: "row",
+    gap: 10,
+    width: "100%",
+    marginBottom: 12,
+  },
+
+  outlineButton: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.85)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+  },
+
+  outlineButtonText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+
+  filledButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+
+  filledButtonText: {
+    color: "#FFF",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+
+  backToMenuText: {
+    fontSize: 13,
+  },
+
+  replayButtonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 14,
+  },
+
+  replayNavButton: {
+    width: 44,
+    height: 44,
     justifyContent: "center",
     alignItems: "center",
   },
 
-  modalContent: {
-    padding: 30,
-    borderRadius: 20,
-    alignItems: "center",
-    width: "85%",
-  },
-
-  resultTitle: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-
-  playAgainButton: {
-    marginTop: 20,
-    padding: 14,
-    borderRadius: 14,
-    width: "100%",
+  replayPlayButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: "center",
     alignItems: "center",
   },
 
-  playAgainText: {
-    color: "#FFF",
-    fontSize: 18,
+  removeAdsButton: {
+    height: 32,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  removeAdsText: {
+    fontSize: 12,
     fontWeight: "600",
   },
 });
