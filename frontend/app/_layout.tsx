@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from '../src/context/UserContext';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
+import mobileAds from 'react-native-google-mobile-ads';
 
 function RootLayoutNav() {
   const { isDarkMode, colors } = useTheme();
@@ -31,6 +32,17 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    mobileAds()
+      .initialize()
+      .then(adapterStatuses => {
+        console.log('Google Mobile Ads initialised');
+      })
+      .catch(error => {
+        console.error('Mobile Ads initialisation error:', error);
+      });
+  }, []);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider>
