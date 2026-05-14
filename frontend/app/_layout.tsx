@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from '../src/context/UserContext';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
-import { AdRemovalProvider } from './context/AdRemovalContext';
+import { AdRemovalProvider } from '../src/context/AdRemovalContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
-import mobileAds from 'react-native-google-mobile-ads';
+
+// Expo Go does not bundle native ad modules — detect it before any require
+const isExpoGo = !!(globalThis as any).expo?.modules?.ExpoGo;
 
 function RootLayoutNav() {
   const { isDarkMode, colors } = useTheme();
-  
+
   return (
     <>
       <StatusBar style={isDarkMode ? 'light' : 'dark'} />
@@ -34,14 +36,23 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   useEffect(() => {
-    mobileAds()
-      .initialize()
-      .then(adapterStatuses => {
-        console.log('Google Mobile Ads initialised');
-      })
-      .catch(error => {
-        console.error('Mobile Ads initialisation error:', error);
-      });
+    if (isExpoGo) return;
+
+    try {
+      // Lazy require keeps the native module out of the module graph in Expo Go
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { default: mobileAds } = require('react-native-google-mobile-ads');
+      mobileAds()
+        .initialize()
+        .then(() => {
+          console.log('Google Mobile Ads initialised');
+        })
+        .catch((err: unknown) => {
+          console.error('Mobile Ads initialisation error:', err);
+        });
+    } catch (e) {
+      console.warn('Google Mobile Ads not available:', e);
+    }
   }, []);
 
   return (

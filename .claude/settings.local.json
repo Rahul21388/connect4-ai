@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('react:', p.dependencies.react, 'react-dom:', p.dependencies['react-dom']\\)\")",
+      "Bash(node -e \"try{console.log\\('frontend/react:',require\\('d:/connect4-ai-game/frontend/node_modules/react/package.json'\\).version\\)}catch\\(e\\){console.log\\('not found'\\)}\")",
+      "Bash(node -e \"try{console.log\\('root/react:',require\\('d:/connect4-ai-game/node_modules/react/package.json'\\).version\\)}catch\\(e\\){console.log\\('no root node_modules/react'\\)}\")",
+      "Bash(dir \"d:\\\\connect4-ai-game\\\\\")",
+      "Bash(node -e \"const p=require\\('d:/connect4-ai-game/frontend/node_modules/expo/package.json'\\); console.log\\('expo peerDeps react:', p.peerDependencies?.react, 'deps react:', p.dependencies?.react\\)\")"
+    ]
+  }
+}

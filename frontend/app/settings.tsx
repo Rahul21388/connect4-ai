@@ -18,7 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
 import { useTheme } from '../src/context/ThemeContext';
-import { useAdRemoval } from './context/AdRemovalContext';
+import { useAdRemoval } from '../src/context/AdRemovalContext';
 import SoundService from '../src/services/SoundService';
 
 export default function SettingsScreen() {

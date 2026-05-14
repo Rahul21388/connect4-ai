@@ -30,7 +30,7 @@ import { getHardMove } from "../src/ai/minimax";
 
 import { useUser } from "../src/context/UserContext";
 import { useTheme } from "../src/context/ThemeContext";
-import { useAdRemoval } from "./context/AdRemovalContext";
+import { useAdRemoval } from "../src/context/AdRemovalContext";
 import AdBanner from "../src/components/ads/AdBanner";
 
 import { updateStats, GameResult } from "../src/firebase/firestore";

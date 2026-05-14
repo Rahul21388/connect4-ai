@@ -19,7 +19,14 @@
     "plugins": [
       "expo-router",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-9942161594730475~8411429010",
+          "iosAppId": "ca-app-pub-9942161594730475~REPLACE_WITH_IOS_APP_ID"
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/images/splash-image.png",
@@ -42,7 +49,8 @@
         "com.android.vending.BILLING",
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE"
-      ]
+      ],
+      "billingClientVersion": "6.0.1"
     },
     "ios": {
       "supportsTablet": true
