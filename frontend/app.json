@@ -2,7 +2,7 @@
   "expo": {
     "name": "Four in a Row AI",
     "slug": "connect4-ai",
-    "version": "1.1.6",
+    "version": "1.1.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "connect4ai",
@@ -19,7 +19,13 @@
     "plugins": [
       "expo-router",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-ads-admob",
+        {
+          "androidClientId": "ca-app-pub-9942161594730475~8411429010"
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/images/splash-image.png",
