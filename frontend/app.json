@@ -2,7 +2,7 @@
   "expo": {
     "name": "Four in a Row AI",
     "slug": "connect4-ai",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "connect4ai",
@@ -48,7 +48,8 @@
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "com.android.vending.BILLING",
         "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "android.permission.ACCESS_NETWORK_STATE",
+        "com.google.android.gms.permission.AD_ID"
       ],
       "billingClientVersion": "6.0.1"
     },
