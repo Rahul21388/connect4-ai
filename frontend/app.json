@@ -19,13 +19,7 @@
     "plugins": [
       "expo-router",
       "expo-audio",
-      "expo-asset",
-      [
-        "expo-ads-admob",
-        {
-          "androidClientId": "ca-app-pub-9942161594730475~8411429010"
-        }
-      ]
+      "expo-asset"
     ],
     "splash": {
       "image": "./assets/images/splash-image.png",
