@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { useUser } from "../src/context/UserContext";
 import { useTheme } from "../src/context/ThemeContext";
+import { useAdRemoval } from "../src/context/AdRemovalContext";
 
 import SoundService from "../src/services/SoundService";
 import AdBanner from "../src/components/ads/AdBanner";
@@ -20,6 +21,7 @@ export default function MenuScreen() {
 
   const { user, logout } = useUser();
   const { colors, soundEnabled } = useTheme();
+  const { adsRemoved } = useAdRemoval();
 
   // ✅ Initialise Sound ONLY ONCE
   useEffect(() => {
@@ -201,8 +203,8 @@ export default function MenuScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* ✅ Banner Ad */}
-        <AdBanner />
+        {/* Banner ad — hidden once ads are removed */}
+        {!adsRemoved && <AdBanner />}
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
