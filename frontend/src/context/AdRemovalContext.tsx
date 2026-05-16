@@ -128,6 +128,7 @@ const NativeAdRemovalProvider: React.FC<{ children: ReactNode }> = ({ children }
     requestPurchase,
     finishTransaction,
     getAvailablePurchases,
+    fetchProducts,
   } = useIAP({
     onPurchaseSuccess: async (purchase) => {
       try {
@@ -149,14 +150,18 @@ const NativeAdRemovalProvider: React.FC<{ children: ReactNode }> = ({ children }
     },
   });
 
-  // Auto-restore on app launch: as soon as the store connects, pull existing entitlements.
+  // On connect: fetch product details (required by Play Billing 5+ before requestPurchase)
+  // and auto-restore existing entitlements.
   useEffect(() => {
     if (!connected || hasAutoRestoredRef.current) return;
     hasAutoRestoredRef.current = true;
+    fetchProducts({ skus: [REMOVE_ADS_SKU], type: 'in-app' }).catch((err) => {
+      console.error('[AdRemoval] fetchProducts error:', err);
+    });
     getAvailablePurchases().catch((err) => {
       console.error('[AdRemoval] Auto-restore error:', err);
     });
-  }, [connected, getAvailablePurchases]);
+  }, [connected, fetchProducts, getAvailablePurchases]);
 
   // Whenever the store updates availablePurchases, re-check for our SKU.
   useEffect(() => {
@@ -173,6 +178,8 @@ const NativeAdRemovalProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
     setIsPurchasing(true);
     try {
+      // Play Billing 5+ requires product details to be fetched before launching purchase flow.
+      await fetchProducts({ skus: [REMOVE_ADS_SKU], type: 'in-app' });
       await requestPurchase({
         request: {
           google: { skus: [REMOVE_ADS_SKU] },
@@ -186,7 +193,7 @@ const NativeAdRemovalProvider: React.FC<{ children: ReactNode }> = ({ children }
       console.error('[AdRemoval] requestPurchase error:', err);
       Alert.alert('Purchase failed', 'Could not initiate purchase.');
     }
-  }, [connected, requestPurchase]);
+  }, [connected, fetchProducts, requestPurchase]);
 
   const restoreAds = useCallback(async () => {
     if (!connected) {
