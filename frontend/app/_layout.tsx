@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from '../src/context/UserContext';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 import { AdRemovalProvider } from '../src/context/AdRemovalContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
+import * as Updates from 'expo-updates';
 
 // Expo Go does not bundle native ad modules — detect it before any require
 const isExpoGo = !!(globalThis as any).expo?.modules?.ExpoGo;
@@ -35,6 +36,41 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const hasPromptedRef = useRef(false);
+
+  // OTA update check — runs on launch and every 30 minutes while app is open.
+  useEffect(() => {
+    if (__DEV__ || isExpoGo) return;
+
+    async function checkForUpdate() {
+      if (hasPromptedRef.current) return;
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (!update.isAvailable) return;
+        await Updates.fetchUpdateAsync();
+        if (hasPromptedRef.current) return;
+        hasPromptedRef.current = true;
+        Alert.alert(
+          'Update Ready',
+          'A new version is available. Restart now to get the latest improvements.',
+          [
+            { text: 'Later', style: 'cancel' },
+            { text: 'Restart Now', onPress: () => Updates.reloadAsync() },
+          ]
+        );
+      } catch {
+        // Silent — network issues should never interrupt gameplay
+      }
+    }
+
+    const launch = setTimeout(checkForUpdate, 3000);
+    const interval = setInterval(checkForUpdate, 30 * 60 * 1000);
+    return () => {
+      clearTimeout(launch);
+      clearInterval(interval);
+    };
+  }, []);
+
   useEffect(() => {
     if (isExpoGo) return;
 
